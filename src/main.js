@@ -22,6 +22,7 @@ const params = {
 refs.form.addEventListener('submit',async (e) => {
     e.preventDefault();
     showLoader();
+
     params.query = refs.input.value.trim();
     params.page = 1;
 
@@ -29,14 +30,14 @@ refs.form.addEventListener('submit',async (e) => {
       hideLoader();
       return;
     }
-  
+    refs.gallery.innerHTML = '';
     refs.form.reset();
     hideBtnLoadMore();
     
     try {
         const result = await searchImg(params.query, params.page,params.per_page);
         const data = result.data;
-        refs.gallery.innerHTML = '';
+        
       
         if (data.hits.length === 0) {
             iziToast.info({
@@ -55,7 +56,7 @@ refs.form.addEventListener('submit',async (e) => {
             params.total = data.totalHits;
             checkBtnLoadMore();
         }
-         hideLoader();
+        
     } catch(error) {
        refs.gallery.innerHTML = '';
        iziToast.error({
@@ -63,6 +64,7 @@ refs.form.addEventListener('submit',async (e) => {
         message: 'Something went wrong. Please try again.',
         position: 'topRight',
        });
+    } finally {
       hideLoader();
     }
 });
@@ -81,14 +83,17 @@ refs.btnLoadMore.addEventListener('click', async () => {
         
         checkBtnLoadMore();
         scrollToNewImages();
-        hideLoader();
+        
     } catch (error) {
         iziToast.error({
             title: 'Error',
             message: 'Something went wrong. Please try again.',
             position: 'topRight',
         });
+        } finally {
+        setTimeout(() => {
         hideLoader();
+    }, 5000);
     }
 });
 
